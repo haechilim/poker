@@ -12,9 +12,9 @@ public class PokerCard extends Panel {
 
     private Image image;
 
-    public PokerCard(Card card) {
+    public PokerCard(PokerTable table, Card card) {
         setLayout(null);
-        setSize(PokerTable.CARD_WIDTH, PokerTable.CARD_HEIGHT);
+        setSize(table.getCardDim().width, table.getCardDim().height);
         image = getCard(toShapeString(card), toNumberString(card));
     }
 

@@ -6,6 +6,7 @@ import core.Player;
 import java.awt.*;
 
 public class PokerPlayer extends Panel {
+    private PokerTable table;
     private Player player;
     private Card[] cards;
     private int index;
@@ -16,7 +17,8 @@ public class PokerPlayer extends Panel {
     private static final Font nameFont = new Font("Monospaced", Font.BOLD, 15);
     private static final Font resultFont = new Font("Monospaced", Font.ITALIC, 13);
 
-    public PokerPlayer(Player player) {
+    public PokerPlayer(PokerTable table, Player player) {
+        this.table = table;
         this.player = player;
         this.cards = player.getCards();
     }
@@ -46,7 +48,7 @@ public class PokerPlayer extends Panel {
     }
 
     public void addCard(Card card) {
-        cardsPanel.add(new PokerCard(card));
+        cardsPanel.add(new PokerCard(table, card));
     }
 
     public Card nextCard() {

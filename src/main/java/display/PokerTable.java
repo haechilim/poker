@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PokerTable extends JFrame implements ActionListener {
-    public static final int CARD_WIDTH = (int)(167 * 0.75);
-    public static final int CARD_HEIGHT = (int)(242 * 0.75);
     private Dimension cardDim = new Dimension(167, 242);
     private Dimension screenDim = Toolkit.getDefaultToolkit().getScreenSize();
     private List<PokerPlayer> playerPanels = new ArrayList<>();
@@ -31,7 +29,7 @@ public class PokerTable extends JFrame implements ActionListener {
     }
 
     public void init() {
-        setUndecorated(true);
+        //setUndecorated(true);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -79,7 +77,7 @@ public class PokerTable extends JFrame implements ActionListener {
         clear();
 
         for(int i=0; i<players.length; i++) {
-            PokerPlayer panel = new PokerPlayer(players[i]);
+            PokerPlayer panel = new PokerPlayer(this, players[i]);
             panel.setBounds(bounds[i]);
             panel.init();
             add(panel);
@@ -169,5 +167,9 @@ public class PokerTable extends JFrame implements ActionListener {
             stopTimer();
             showResult();
         }
+    }
+
+    public Dimension getCardDim() {
+        return cardDim;
     }
 }

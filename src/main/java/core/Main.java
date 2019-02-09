@@ -48,7 +48,7 @@ public class Main {
 
         PokerTable table = new PokerTable("해치 포커");
         table.init();
-        //table.setAnimation(false, 100);
+        table.setAnimation(false, 100);
         table.run(new Player[] { p1, p2, p1, p2 });
     }
 }
