@@ -15,13 +15,13 @@ public class PokerTable extends JFrame implements ActionListener {
     public static final int CARD_HEIGHT = (int)(242 * 0.75);
     private Dimension cardDim = new Dimension(167, 242);
     private Dimension screenDim = Toolkit.getDefaultToolkit().getScreenSize();
-    private List<PokerCardSet> cardSets = new ArrayList<>();
+    private List<PokerPlayer> playerPanels = new ArrayList<>();
     private Label winner;
     private Font font = new Font("Monospaced", Font.BOLD, 30);
     private Timer timer;
     private boolean timerEnabled;
     private int timerInterval;
-    private int cardSetIndex;
+    private int playerPanelIndex;
 
     public PokerTable(String title) throws HeadlessException {
         super(title);
@@ -47,15 +47,13 @@ public class PokerTable extends JFrame implements ActionListener {
     }
 
     public void run(Player[] players) {
-        makeCardSets(players);
+        makePlayerPanels(players);
 
         if(timerEnabled) startTimer();
         else {
             while(showNextCard(false)) {}
 
-            winner.setVisible(true);
-            revalidate();
-            repaint();
+            showResult();
         }
     }
 
@@ -75,16 +73,17 @@ public class PokerTable extends JFrame implements ActionListener {
         add(winner);
     }
 
-    private void makeCardSets(Player[] players) {
+    private void makePlayerPanels(Player[] players) {
         Rectangle[] bounds = getBounds(players.length);
 
         clear();
 
         for(int i=0; i<players.length; i++) {
-            PokerCardSet cardSet = new PokerCardSet(players[i]);
-            cardSet.setBounds(bounds[i]);
-            add(cardSet);
-            cardSets.add(cardSet);
+            PokerPlayer panel = new PokerPlayer(players[i]);
+            panel.setBounds(bounds[i]);
+            panel.init();
+            add(panel);
+            playerPanels.add(panel);
         }
     }
 
@@ -92,7 +91,7 @@ public class PokerTable extends JFrame implements ActionListener {
         int frameWidth = screenDim.width;
         int frameHeight = screenDim.height - 30;
         int width = (cardDim.width + 5) * 5 + 10;
-        int height = cardDim.height + 10;
+        int height = cardDim.height + 15 + 10;
         int x = frameWidth /2 - width/2;
         int y = frameHeight /2 - height/2;
 
@@ -116,32 +115,42 @@ public class PokerTable extends JFrame implements ActionListener {
     }
 
     private void clear() {
-        for(PokerCardSet cardSet : cardSets) {
-            remove(cardSet);
+        for(PokerPlayer panel : playerPanels) {
+            remove(panel);
         }
 
-        cardSets.clear();
+        playerPanels.clear();
     }
 
     private boolean showNextCard(boolean update) {
-        PokerCardSet cardSet = cardSets.get(cardSetIndex++);
-        Card card = cardSet.nextCard();
+        PokerPlayer panel = playerPanels.get(playerPanelIndex++);
+        Card card = panel.nextCard();
 
-        if(card == null) return cardSetIndex>=cardSets.size() ? false : true;
-        cardSetIndex %= cardSets.size();
+        if(card == null) return playerPanelIndex >= playerPanels.size() ? false : true;
+        playerPanelIndex %= playerPanels.size();
 
-        cardSet.add(new PokerCard(card));
+        panel.addCard(card);
 
         if(update) {
-            cardSet.revalidate();
-            cardSet.repaint();
+            panel.revalidate();
+            panel.repaint();
         }
 
         return true;
     }
 
+    private void showResult() {
+        for(PokerPlayer panel : playerPanels) {
+            panel.showResult();
+        }
+
+        winner.setVisible(true);
+        revalidate();
+        repaint();
+    }
+
     private void startTimer() {
-        cardSetIndex = 0;
+        playerPanelIndex = 0;
         stopTimer();
         timer = new Timer(timerInterval, this);
         timer.start();
@@ -158,10 +167,7 @@ public class PokerTable extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent event) {
         if(!showNextCard(true)) {
             stopTimer();
-
-            winner.setVisible(true);
-            revalidate();
-            repaint();
+            showResult();
         }
     }
 }
