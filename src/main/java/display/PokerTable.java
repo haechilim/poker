@@ -1,6 +1,7 @@
 package display;
 
 import core.Card;
+import core.Deck;
 import core.Player;
 import core.ResultChecker;
 
@@ -12,30 +13,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PokerTable extends JFrame implements ActionListener {
+    private Deck deck;
     private ResultChecker resultChecker;
+    private Player[] players;
     private Dimension frameDim;
     private Dimension cardDim;
     private List<PokerPlayer> playerPanels = new ArrayList<>();
     private Label winner;
+    private Button nextGame;
+    private Button exit;
     private Font font = new Font("Monospaced", Font.BOLD, 30);
     private Timer timer;
     private boolean timerEnabled = true;
     private int timerInterval = 500;
     private int playerPanelIndex;
 
-    public PokerTable(String title, ResultChecker resultChecker) throws HeadlessException {
+    public PokerTable(String title, Deck deck, ResultChecker resultChecker, Player[] players) throws HeadlessException {
         super(title);
+
+        this.deck = deck;
         this.resultChecker = resultChecker;
+        this.players = players;
     }
 
     public void init() {
-        //setUndecorated(true);
+        setUndecorated(true);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setLayout(null);
         initDimensions();
-        makeWinner();
+        makeComponents();
         setVisible(true);
     }
 
@@ -44,13 +52,8 @@ public class PokerTable extends JFrame implements ActionListener {
         timerInterval = interval;
     }
 
-    public void run(Player[] players) {
-        if(players.length >= 2) {
-            Player theFirst = resultChecker.determineWinner(players[0], players[1]);
-            winner.setText("WINNER: " + theFirst.getName());
-        }
-
-        makePlayerPanels(players);
+    public void run() {
+        makePlayerPanels();
 
         if(timerEnabled) startTimer();
         else {
@@ -62,14 +65,25 @@ public class PokerTable extends JFrame implements ActionListener {
 
     private void initDimensions() {
         Dimension screenDim = Toolkit.getDefaultToolkit().getScreenSize();
-        frameDim = new Dimension(screenDim.width, screenDim.height - 60);
+        frameDim = new Dimension(screenDim.width, screenDim.height - 30);
         cardDim = new Dimension();
         cardDim.height = (int)(frameDim.height / 5.0);
         cardDim.width = (int)(cardDim.height * 0.69);
     }
 
-    private void makeWinner() {
-        winner = new Label("WINNER: 임준형");
+    private void makeComponents() {
+        nextGame = new Button("한게임 더!");
+        nextGame.setBounds(10, 10, 130, 60);
+        nextGame.addActionListener(this);
+        nextGame.setVisible(false);
+        add(nextGame);
+
+        exit = new Button("종료");
+        exit.setBounds(frameDim.width - 100, 10, 90, 60);
+        exit.addActionListener(this);
+        add(exit);
+
+        winner = new Label();
         winner.setVisible(false);
         winner.setFont(font);
         winner.setForeground(Color.WHITE);
@@ -79,7 +93,7 @@ public class PokerTable extends JFrame implements ActionListener {
         add(winner);
     }
 
-    private void makePlayerPanels(Player[] players) {
+    private void makePlayerPanels() {
         Rectangle[] bounds = getBounds(players.length);
 
         clear();
@@ -121,11 +135,16 @@ public class PokerTable extends JFrame implements ActionListener {
     }
 
     private void clear() {
+        playerPanelIndex = 0;
+
         for(PokerPlayer panel : playerPanels) {
             remove(panel);
         }
 
         playerPanels.clear();
+
+        nextGame.setVisible(false);
+        winner.setVisible(false);
     }
 
     private boolean showNextCard(boolean update) {
@@ -146,11 +165,16 @@ public class PokerTable extends JFrame implements ActionListener {
     }
 
     private void showResult() {
+        if(players.length >= 2) {
+            Player first = resultChecker.determineWinner(players[0], players[1]);
+            winner.setText("WINNER: " + first.getName());
+        }
+
         for(PokerPlayer panel : playerPanels) {
             panel.showResult();
         }
 
-
+        nextGame.setVisible(true);
         winner.setVisible(true);
         revalidate();
         repaint();
@@ -172,9 +196,22 @@ public class PokerTable extends JFrame implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent event) {
-        if(!showNextCard(true)) {
-            stopTimer();
-            showResult();
+        if(event.getSource() == exit) dispose();
+        else if(event.getSource() == nextGame) {
+            deck.init();
+
+            for(Player player : players) {
+                player.setCards(deck.drawCards(5));
+                resultChecker.makeResult(player);
+            }
+
+            run();
+        }
+        else {
+            if (!showNextCard(true)) {
+                stopTimer();
+                showResult();
+            }
         }
     }
 

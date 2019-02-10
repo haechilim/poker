@@ -55,10 +55,10 @@ public class Main {
         resultChecker.makeResult(p3);
         resultChecker.makeResult(p4);
 
-        PokerTable table = new PokerTable("해치 포커", resultChecker);
+        PokerTable table = new PokerTable("해치 포커", deck, resultChecker, new Player[] { p1, p2, });//p3, p4 });
         table.init();
-        table.setAnimation(false, 100);
-        table.run(new Player[] { p1, p2, });//p3, p4 });
+        //table.setAnimation(false, 100);
+        table.run();
 
         /*System.out.println(p1.getName() +  ": " + p1.getCardsText() + p1.getResult().text());
         System.out.println();
