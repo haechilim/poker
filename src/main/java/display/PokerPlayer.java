@@ -38,7 +38,7 @@ public class PokerPlayer extends Panel {
         add(name);
 
         result = new Label();
-        result.setText("K 스트레이트");
+        result.setText(player.getResult().text());
         result.setFont(resultFont);
         result.setAlignment(Label.RIGHT);
         result.setForeground(Color.GRAY);

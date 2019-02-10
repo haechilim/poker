@@ -1,10 +1,10 @@
 package core;
 
 public class Card {
-    public int shape;
-    public int number;
-    public boolean selected;
-    public boolean checked;
+    private int shape;
+    private int number;
+    private boolean selected;
+    private boolean checked;
 
     public int getShape() {
         return shape;
@@ -38,13 +38,25 @@ public class Card {
         this.checked = checked;
     }
 
-    @Override
+    public static String getNumberText(int number) {
+        if(number == 11) return "J";
+        else if(number == 12) return "Q";
+        else if(number == 13) return "K";
+        else if(number == 14) return "A";
+
+        return number + "";
+    }
+
+    public static String getShapeText(int shape) {
+        if (shape == 0) return "♤";
+        else if (shape == 1) return "◇";
+        else if (shape == 2) return "♡";
+        else if (shape == 3) return "♣";
+
+        return "";
+    }
+
     public String toString() {
-        return "Card{" +
-                "shape=" + shape +
-                ", number=" + number +
-                ", selected=" + selected +
-                ", checked=" + checked +
-                '}';
+        return getShapeText(shape) + getNumberText(number);
     }
 }

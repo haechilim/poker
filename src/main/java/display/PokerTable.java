@@ -2,6 +2,7 @@ package display;
 
 import core.Card;
 import core.Player;
+import core.ResultChecker;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,21 +12,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PokerTable extends JFrame implements ActionListener {
-    private Dimension cardDim = new Dimension(167, 242);
-    private Dimension screenDim = Toolkit.getDefaultToolkit().getScreenSize();
+    private ResultChecker resultChecker;
+    private Dimension frameDim;
+    private Dimension cardDim;
     private List<PokerPlayer> playerPanels = new ArrayList<>();
     private Label winner;
     private Font font = new Font("Monospaced", Font.BOLD, 30);
     private Timer timer;
-    private boolean timerEnabled;
-    private int timerInterval;
+    private boolean timerEnabled = true;
+    private int timerInterval = 500;
     private int playerPanelIndex;
 
-    public PokerTable(String title) throws HeadlessException {
+    public PokerTable(String title, ResultChecker resultChecker) throws HeadlessException {
         super(title);
-
-        timerEnabled = true;
-        timerInterval = 500;
+        this.resultChecker = resultChecker;
     }
 
     public void init() {
@@ -34,7 +34,7 @@ public class PokerTable extends JFrame implements ActionListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setLayout(null);
-        initCardDimension();
+        initDimensions();
         makeWinner();
         setVisible(true);
     }
@@ -45,6 +45,11 @@ public class PokerTable extends JFrame implements ActionListener {
     }
 
     public void run(Player[] players) {
+        if(players.length >= 2) {
+            Player theFirst = resultChecker.determineWinner(players[0], players[1]);
+            winner.setText("WINNER: " + theFirst.getName());
+        }
+
         makePlayerPanels(players);
 
         if(timerEnabled) startTimer();
@@ -55,8 +60,11 @@ public class PokerTable extends JFrame implements ActionListener {
         }
     }
 
-    private void initCardDimension() {
-        cardDim.height = (int)(screenDim.height / 5.0);
+    private void initDimensions() {
+        Dimension screenDim = Toolkit.getDefaultToolkit().getScreenSize();
+        frameDim = new Dimension(screenDim.width, screenDim.height - 60);
+        cardDim = new Dimension();
+        cardDim.height = (int)(frameDim.height / 5.0);
         cardDim.width = (int)(cardDim.height * 0.69);
     }
 
@@ -67,7 +75,7 @@ public class PokerTable extends JFrame implements ActionListener {
         winner.setForeground(Color.WHITE);
         winner.setBackground(new Color(255, 0, 0, 120));
         winner.setAlignment(Label.CENTER);
-        winner.setBounds(0, screenDim.height/2 - 50, screenDim.width, 100);
+        winner.setBounds(0, frameDim.height/2 - 50, frameDim.width, 100);
         add(winner);
     }
 
@@ -86,8 +94,8 @@ public class PokerTable extends JFrame implements ActionListener {
     }
 
     private Rectangle[] getBounds(int count) {
-        int frameWidth = screenDim.width;
-        int frameHeight = screenDim.height - 30;
+        int frameWidth = frameDim.width;
+        int frameHeight = frameDim.height;
         int width = (cardDim.width + 5) * 5 + 10;
         int height = cardDim.height + 15 + 10;
         int x = frameWidth /2 - width/2;
@@ -141,6 +149,7 @@ public class PokerTable extends JFrame implements ActionListener {
         for(PokerPlayer panel : playerPanels) {
             panel.showResult();
         }
+
 
         winner.setVisible(true);
         revalidate();

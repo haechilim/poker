@@ -38,12 +38,12 @@ public class Result {
     }
     
     public String text() {
-        return "";
+        return Card.getNumberText(top) + " " + levels[what];
     }
 
     @Override
     public String toString() {
-        return "core.Result{" +
+        return "Result{" +
                 "what=" + what +
                 ", top=" + top +
                 ", shape=" + shape +
