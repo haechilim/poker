@@ -5,13 +5,31 @@ public class ResultChecker {
     public static final int TRIPLE = 1;
     public static final int FOUR_CARDS = 2;
 
+    public Player determineWinner(Player[] players) {
+        Player temp;
+        Player[] copied = copy(players);
+
+        for(int i = 0; i < (copied.length - 1); i++) {
+            for(int j = (i + 1); j < copied.length; j++) {
+                if((copied[j] == determineWinner(copied[i], copied[j]))) {
+                    temp = copied[j];
+                    copied[j] = copied[i];
+                    copied[i] = temp;
+                }
+            }
+        }
+
+        return copied[0];
+    }
+
+
     public Player determineWinner(Player player1, Player player2) {
         Result result1 = player1.getResult();
         Result result2 = player2.getResult();
 
-        if(result1.what != result2.what) return result1.what < result2.what ? player1 : player2;
+        if (result1.what != result2.what) return result1.what < result2.what ? player1 : player2;
 
-        return compareDetails(player1 , player2) > 0 ? player1 : player2;
+        return compareDetails(player1, player2) > 0 ? player1 : player2;
     }
 
     private int compareDetails(Player player1, Player player2) {
@@ -21,7 +39,8 @@ public class ResultChecker {
         if(result1.what == result1.STRAIGHT_FLUSH
                 || result1.what == result1.STRAIGHT
                 || result1.what == result1.FLUSH) {
-            return compareNumbers(result1.tops, result2.tops);
+            return compareNumbers(result1.tops, result2.tops) != 0 ?
+                    compareNumbers(result1.tops, result2.tops) : compareShapes(result1.shape, result2.shape);
         }
         else if(result1.what == result1.FOUR_CARDS
                 || result1.what == result1.FULL_HOUSE
@@ -30,10 +49,12 @@ public class ResultChecker {
         }
         else {
             int result = compareNumbers(result1.tops, result2.tops);
-
             if(result != 0) return result;
 
-            return compareNumbers(result1.others, result2.others);
+            result = compareNumbers(result1.others, result2.others);
+            if(result != 0) return result;
+
+            return compareShapes(result1.shape, result2.shape);
         }
     }
 
@@ -45,6 +66,10 @@ public class ResultChecker {
         }
 
         return 0;
+    }
+
+    private int compareShapes(int shapes1, int shapes2) {
+        return shapes1 < shapes2 ? 1 : -1;
     }
 
     public void makeResult(Player player) {
@@ -69,6 +94,8 @@ public class ResultChecker {
         if(isStraight(cards) && isFlush(cards)) {
             result.what = Result.STRAIGHT_FLUSH;
             findTops(cards, result);
+            findShapes(cards, result);
+            findShapes(cards, result);
         }
     }
 
@@ -101,6 +128,7 @@ public class ResultChecker {
         if(isFlush(cards)) {
             result.what = Result.FLUSH;
             findTops(cards, result);
+            findShapes(cards, result);
         }
     }
 
@@ -110,6 +138,7 @@ public class ResultChecker {
         if(isStraight(cards)) {
             result.what = Result.STRAIGHT;
             findTops(cards, result);
+            findShapes(cards, result);
         }
     }
 
@@ -134,6 +163,7 @@ public class ResultChecker {
             result.what = tops.size() == 1 ? Result.ONE_PAIR : Result.TWO_PAIR;
             result.top = tops.first();
             result.tops = tops;
+            findShapes(cards, result);
 
             for(int i = 0; i < cards.length; i++) {
                 if(!cards[i].isChecked()) result.others.add(cards[i].getNumber());
@@ -144,6 +174,7 @@ public class ResultChecker {
     private void checkTop(Card[] cards, Result result) {
         if(result.isDone()) return;
         if(findTops(cards, result)) result.what = Result.TOP;
+        findShapes(cards, result);
     }
 
 
@@ -170,13 +201,13 @@ public class ResultChecker {
         int count = 1;
 
         clearChecked(cards);
-        sort(cards, false);
+        Card[] copied = sort(cards, false);
 
         if(isBackStraight(cards)) return true;
 
-        for (int i = 0; i < (cards.length - 1); i++) {
-            if (cards[i].getNumber() == cards[i + 1].getNumber()) continue;
-            else if ((cards[i].getNumber() - 1) == cards[i + 1].getNumber()) {
+        for (int i = 0; i < (copied.length - 1); i++) {
+            if (copied[i].getNumber() == copied[i + 1].getNumber()) continue;
+            else if ((copied[i].getNumber() - 1) == copied[i + 1].getNumber()) {
                 count++;
                 if (count >= 5) return true;
             }
@@ -199,15 +230,32 @@ public class ResultChecker {
     private boolean findTops(Card[] cards, Result result) {
         if(cards.length <= 0) return false;
 
-        sort(cards, false);
+        Card[] copied = sort(cards, false);
 
-        result.top = cards[0].getNumber();
+        result.top = copied[0].getNumber();
 
-        for(int i = 0; i < cards.length; i++) {
-            result.tops.add(cards[i].getNumber());
+        for(int i = 0; i < copied.length; i++) {
+            result.tops.add(copied[i].getNumber());
         }
 
         return true;
+    }
+
+    private void findShapes(Card[] cards, Result result) {
+        Card[] sorted = sort(cards, false);
+
+        for(int i = 0; i < sorted.length - 1; i++) {
+            if(!sorted[i].isChecked()) continue;
+            else if(sorted[i].getNumber() == sorted[i + 1].getNumber()) {
+                result.shape = sorted[i].getShape() < sorted[i + 1].getShape() ?
+                        sorted[i].getShape() : sorted[i + 1].getShape();
+                break;
+            }
+            else {
+                result.shape = sorted[i].getShape();
+                break;
+            }
+        }
     }
 
     private boolean existsNumber(Card[] cards, int number) {
@@ -246,18 +294,41 @@ public class ResultChecker {
         return array;
     }
 
-    private void sort(Card[] cards, boolean ascending) {
+    private Card[] sort(Card[] cards, boolean ascending) {
         Card temp;
+        Card[] result = copy(cards);
 
-        for(int i = 0; i < cards.length - 1; i++) {
-            for(int j = (i + 1); j < cards.length; j++) {
-                if((cards[i].getNumber() > cards[j].getNumber() && ascending) || (cards[i].getNumber() < cards[j].getNumber() && !ascending)) {
-                    temp = cards[i];
-                    cards[i] = cards[j];
-                    cards[j] = temp;
+        for(int i = 0; i < result.length - 1; i++) {
+            for(int j = (i + 1); j < result.length; j++) {
+                if((result[i].getNumber() > result[j].getNumber() && ascending) || (result[i].getNumber() < result[j].getNumber() && !ascending)) {
+                    temp = result[i];
+                    result[i] = result[j];
+                    result[j] = temp;
                 }
             }
         }
+
+        return result;
+    }
+
+    private Player[] copy(Player[] players) {
+        Player[] result = new Player[players.length];
+
+        for(int i = 0; i < players.length; i++) {
+            result[i] = players[i];
+        }
+
+        return result;
+    }
+    
+    private Card[] copy(Card[] cards) {
+        Card[] result = new Card[cards.length];
+
+        for(int i = 0; i < cards.length; i++) {
+            result[i] = cards[i];
+        }
+
+        return result;
     }
 
     private void clearChecked(Card[] cards) {

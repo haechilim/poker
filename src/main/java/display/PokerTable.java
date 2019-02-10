@@ -72,13 +72,13 @@ public class PokerTable extends JFrame implements ActionListener {
     }
 
     private void makeComponents() {
-        nextGame = new Button("한게임 더!");
+        nextGame = new Button("One More Game!");
         nextGame.setBounds(10, 10, 130, 60);
         nextGame.addActionListener(this);
         nextGame.setVisible(false);
         add(nextGame);
 
-        exit = new Button("종료");
+        exit = new Button("Exit");
         exit.setBounds(frameDim.width - 100, 10, 90, 60);
         exit.addActionListener(this);
         add(exit);
@@ -167,7 +167,7 @@ public class PokerTable extends JFrame implements ActionListener {
 
     private void showResult() {
         if(players.length >= 2) {
-            Player first = resultChecker.determineWinner(players[0], players[1]);
+            Player first = resultChecker.determineWinner(players);
             winner.setText("WINNER: " + first.getName());
         }
 

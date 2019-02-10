@@ -25,6 +25,19 @@ public class Result {
             "탑"
     };
 
+    private static final String[] englishlevels = {
+            "",
+            "Straight Flush",
+            "Four Cards",
+            "Full House",
+            "Flush",
+            "Straight",
+            "Triple",
+            "Two Pairs",
+            "One Pair",
+            "Top"
+    };
+
     public int what = NONE;
     public int top;     //  포커, 풀하우스, 트리플의 숫자
     public int shape;   //  가장 높은 숫자의 모양
@@ -37,7 +50,7 @@ public class Result {
     }
     
     public String text() {
-        return Card.getNumberText(top) + " " + levels[what];
+        return Card.getNumberText(top) + " " + englishlevels[what];
     }
 
     public int getWhat() {

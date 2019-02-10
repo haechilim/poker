@@ -5,6 +5,10 @@ public class Player{
     private Card[] cards;
     private Result result;
 
+    public Player(String name) {
+        this.name = name;
+    }
+
     public String getName() {
         return name;
     }
@@ -29,7 +33,7 @@ public class Player{
         this.result = result;
     }
 
-    public String  getCardsText() {
+    public String getCardsText() {
         String result = "";
 
         for(int i = 0; i < cards.length; i++) {
