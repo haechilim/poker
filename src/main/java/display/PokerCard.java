@@ -10,12 +10,25 @@ public class PokerCard extends Panel {
     private static final String[] shapes = { "spade", "diamond", "heart", "club" };
     private static final String[] numbers = { "", "", "2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king", "ace" };
 
+    private Card card;
     private Image image;
 
     public PokerCard(PokerTable table, Card card) {
+        this.card = card;
+
         setLayout(null);
         setSize(table.getCardDim().width, table.getCardDim().height);
         image = getCard(toShapeString(card), toNumberString(card));
+    }
+
+    public void highlight() {
+        setBackground(Color.RED);
+        revalidate();
+        repaint();
+    }
+
+    public int getNumber() {
+        return card.getNumber();
     }
 
     private Image getCard(String shape, String number) {
@@ -35,6 +48,7 @@ public class PokerCard extends Panel {
 
     @Override
     public void paint(Graphics graphics) {
-        graphics.drawImage(image, 0, 0, getWidth(), getHeight(), this);
+        //graphics.drawImage(image, 0, 0, getWidth(), getHeight(), this);
+        graphics.drawImage(image, 2, 2, getWidth() - 4, getHeight() - 4, this);
     }
 }

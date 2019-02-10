@@ -25,11 +25,11 @@ public class Main {
         /*Card[] cards1 = p1.getCards();
         Card[] cards2 = p2.getCards();
         
-        cards1[0].setNumber(14);
-        cards1[1].setNumber(9);
-        cards1[2].setNumber(9);
-        cards1[3].setNumber(4);
-        cards1[4].setNumber(5);
+        cards1[0].setNumber(4);
+        cards1[1].setNumber(5);
+        cards1[2].setNumber(6);
+        cards1[3].setNumber(7);
+        cards1[4].setNumber(8);
 
         cards1[0].setShape(2);
         cards1[1].setShape(1);
@@ -55,9 +55,9 @@ public class Main {
         resultChecker.makeResult(p3);
         resultChecker.makeResult(p4);
 
-        PokerTable table = new PokerTable("해치 포커", deck, resultChecker, new Player[] { p1, p2, });//p3, p4 });
+        PokerTable table = new PokerTable("해치 포커", deck, resultChecker, new Player[] { p1, p2, p3 });
         table.init();
-        //table.setAnimation(false, 100);
+        table.setAnimation(false, 100);
         table.run();
 
         /*System.out.println(p1.getName() +  ": " + p1.getCardsText() + p1.getResult().text());

@@ -1,9 +1,13 @@
 package display;
 
 import core.Card;
+import core.HaechiArray;
 import core.Player;
+import core.Result;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PokerPlayer extends Panel {
     private PokerTable table;
@@ -56,6 +60,48 @@ public class PokerPlayer extends Panel {
     }
 
     public void showResult() {
+        Result playingResult = player.getResult();
+        HaechiArray tops = playingResult.getTops();
+
+        switch (playingResult.getWhat()) {
+            case Result.FULL_HOUSE:
+            case Result.FLUSH:
+            case Result.STRAIGHT:
+            case Result.STRAIGHT_FLUSH:
+                for(Card card : cards) {
+                    highlightCards(card.getNumber());
+                }
+                break;
+
+            case Result.TRIPLE:
+            case Result.TOP:
+                highlightCards(playingResult.getTop());
+                break;
+
+            default:
+                for(int i=0; i<tops.size(); i++) {
+                    highlightCards(tops.get(i));
+                }
+                break;
+        }
+
         result.setVisible(true);
+    }
+
+    private void highlightCards(int number) {
+        for(PokerCard card : findChards(number)) {
+            card.highlight();
+        }
+    }
+
+    private List<PokerCard> findChards(int number) {
+        List<PokerCard> result = new ArrayList<>();
+
+        for(Component component : cardsPanel.getComponents()) {
+            PokerCard card = (PokerCard)component;
+            if(card.getNumber() == number) result.add(card);
+        }
+
+        return result;
     }
 }

@@ -87,7 +87,8 @@ public class PokerTable extends JFrame implements ActionListener {
         winner.setVisible(false);
         winner.setFont(font);
         winner.setForeground(Color.WHITE);
-        winner.setBackground(new Color(255, 0, 0, 120));
+        //winner.setBackground(new Color(255, 0, 0, 120));
+        winner.setBackground(new Color(0, 0, 255, 120));
         winner.setAlignment(Label.CENTER);
         winner.setBounds(0, frameDim.height/2 - 50, frameDim.width, 100);
         add(winner);

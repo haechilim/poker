@@ -32,13 +32,28 @@ public class Result {
     public HaechiArray tops = new HaechiArray();
     public HaechiArray others = new HaechiArray();
 
-
     public boolean isDone() {
         return what != NONE;
     }
     
     public String text() {
         return Card.getNumberText(top) + " " + levels[what];
+    }
+
+    public int getWhat() {
+        return what;
+    }
+
+    public int getTop() {
+        return top;
+    }
+
+    public int getShape() {
+        return shape;
+    }
+
+    public HaechiArray getTops() {
+        return tops;
     }
 
     @Override
