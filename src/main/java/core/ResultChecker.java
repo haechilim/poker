@@ -95,8 +95,8 @@ public class ResultChecker {
             result.what = Result.STRAIGHT_FLUSH;
             findTops(cards, result);
             findShapes(cards, result);
-            findShapes(cards, result);
         }
+        else clearChecked(cards);
     }
 
     private void checkFourCards(Card[] cards, Result result) {
@@ -108,6 +108,7 @@ public class ResultChecker {
             result.what = Result.FOUR_CARDS;
             result.top = tops.first();
         }
+        else clearChecked(cards);
     }
 
     private void checkFullHouse(Card[] cards, Result result) {
@@ -120,6 +121,7 @@ public class ResultChecker {
             result.what = Result.FULL_HOUSE;
             result.top = tripleTops.first();
         }
+        else clearChecked(cards);
     }
 
     private void checkFlush(Card[] cards, Result result) {
@@ -245,7 +247,7 @@ public class ResultChecker {
         Card[] sorted = sort(cards, false);
 
         for(int i = 0; i < sorted.length - 1; i++) {
-            if(!sorted[i].isChecked()) continue;
+            if(result.what != result.TOP && !sorted[i].isChecked()) continue;
             else if(sorted[i].getNumber() == sorted[i + 1].getNumber()) {
                 result.shape = sorted[i].getShape() < sorted[i + 1].getShape() ?
                         sorted[i].getShape() : sorted[i + 1].getShape();

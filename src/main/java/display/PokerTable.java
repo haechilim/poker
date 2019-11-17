@@ -39,6 +39,7 @@ public class PokerTable extends JFrame implements ActionListener {
     public void init() {
         setUndecorated(true);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
+        //setBounds(0, 0, 1980, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setLayout(null);
@@ -111,7 +112,7 @@ public class PokerTable extends JFrame implements ActionListener {
     private Rectangle[] getBounds(int count) {
         int frameWidth = frameDim.width;
         int frameHeight = frameDim.height;
-        int width = (cardDim.width + 5) * 5 + 10;
+        int width = (cardDim.width + 5) * 7 + 10;
         int height = cardDim.height + 15 + 10;
         int x = frameWidth /2 - width/2;
         int y = frameHeight /2 - height/2;
@@ -202,7 +203,7 @@ public class PokerTable extends JFrame implements ActionListener {
             deck.init();
 
             for(Player player : players) {
-                player.setCards(deck.drawCards(5));
+                player.setCards(deck.drawCards(7));
                 resultChecker.makeResult(player);
             }
 

@@ -22,7 +22,7 @@ public class PokerCard extends Panel {
     }
 
     public void highlight() {
-        setBackground(Color.RED);
+        setBackground(Color.BLUE);
         revalidate();
         repaint();
     }
